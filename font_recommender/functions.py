@@ -75,9 +75,10 @@ def generate_font_selection(font_id=np.random.randint(low=0,high=300), #TO BE CH
     if mode=="exploitation":
         font_choice = relevant_set.argsort()[1:6]
     # set_trace()
-    paths = list(set(font_infos.iloc[font_choice,1].values))
+    names = list(set(font_infos.iloc[font_choice,1].values))
 
-    return paths, font_choice
+
+    return names, font_choice
 
 
 
