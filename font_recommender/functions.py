@@ -2,36 +2,48 @@ import glob2 as glob
 from PIL import ImageFont, Image, ImageDraw
 import numpy as np
 import pandas as pd
+from pdb import set_trace
+from font_recommender import helpers
 
 def picture_paths(pname="font_recommender"):
     font_paths = glob.glob(pname + '/static/*.png', )
     # Here we could also add more background
     # information to the particular font into its dictionary
     # in order to feed it to the HTML
+
     fonts = [
         dict([("picture", path[len(pname):])]) for path in font_paths
     ]
+
     return fonts
 
 
-def generate_sentences(
-        font_list = [0,1,2,3,4],
-        font_infos = pd.read_csv("font_recommender/static/font_infos.csv"),
-        sentence='The quick brown fox jumps over the lazy dog'):
 
-    print(font_list)
+def generate_sentences(font_list = [20,21,22,23,24],
+        font_infos = pd.read_csv("font_recommender/static/font_infos.csv")):
+
     font_list = list(font_infos.iloc[font_list,1])
     font_list = [f"font_recommender/static/fonts/{font}.ttf" for font in font_list]
 
-    for idx, font in enumerate(font_list):
-        fnt = ImageFont.truetype(font, 100)
-        img = Image.new('RGB', (2500, 150), color='white')
-        d = ImageDraw.Draw(img)
-        d.text((10, 10), sentence,
-               font=fnt, fill=(0, 0, 0))
-        img.save("font_recommender/static/picture" + str(idx) + ".png")
+    png_paths = []
+    for font in font_list:
+        png = helpers.reconstruct_img(font, scale=0, border = 2500)
+        png_paths.append(f'font_recommender/static/{png}')
+
+    scales = helpers.get_scales(png_paths)
+
+    for idx,path in enumerate(font_list):
+        helpers.reconstruct_img(path, scale=scales[idx], border = 1500)
+
+    shifts = helpers.get_shifts(png_paths)
+
+    for idx, path in enumerate(font_list):
+        helpers.reconstruct_img(path, scale=scales[idx], border = 1500,
+                       x_shift = shifts[idx][0], y_shift = shifts[idx][1])
 
     return "printed sentences!"
+
+
 
 
 def generate_font_selection(font_id=np.random.randint(low=0,high=300), #TO BE CHANGED
@@ -53,8 +65,11 @@ def generate_font_selection(font_id=np.random.randint(low=0,high=300), #TO BE CH
         font_choice = np.random.choice(relevant_set,5,replace=False)
     if mode=="exploitation":
         font_choice = relevant_set.argsort()[1:7]
+        # set_trace()
 
     return font_choice
+
+
 
 
 
