@@ -21,7 +21,11 @@ def picture_paths(pname="font_recommender"):
 
 def generate_sentences(font_list = [20,21,22,23,24],
         font_infos = pd.read_csv("font_recommender/static/font_infos.csv")):
+    '''
+    Here we generate images that go through a series of image reconstruction 
+    in order to ensure uniformly shaped and centered images of a sentence
 
+    '''
     # set_trace()
     font_list = list(font_infos.iloc[font_list,1])
 
@@ -78,6 +82,9 @@ def generate_font_selection(font_id=np.random.randint(low=0,high=300), #TO BE CH
 
 
 def get_font_id(string, font_infos = pd.read_csv("font_recommender/static/font_infos.csv")):
+    '''
+    Extracts the index of the font name  
+    '''
     font_name = string.split('/')[-1].split('.')[0]
     column = font_infos.columns[1]
     idx = font_infos[font_infos[column]==font_name].index[0]
